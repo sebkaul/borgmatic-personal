@@ -3,6 +3,7 @@ services:
     image: ghcr.io/borgmatic-collective/borgmatic:2
     container_name: borgmatic
     restart: unless-stopped
+    network_mode: host
     entrypoint: ["sleep", "infinity"]
     volumes:
       - ${IMMICH_LIBRARY_PATH}:/mnt/source/immich
