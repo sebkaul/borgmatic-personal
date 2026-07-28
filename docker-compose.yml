@@ -1,0 +1,33 @@
+services:
+  borgmatic:
+    image: ghcr.io/borgmatic-collective/borgmatic:2
+    container_name: borgmatic
+    restart: unless-stopped
+    entrypoint: ["sleep", "infinity"]
+    volumes:
+      - ${IMMICH_LIBRARY_PATH}:/mnt/source/immich
+      - ./config:/etc/borgmatic.d
+      - ./ssh:/root/.ssh
+      - borg-config:/root/.config/borg
+      - borg-cache:/root/.cache/borg
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/bin/docker:/usr/bin/docker:ro
+    environment:
+      - TZ=${TZ}
+      - BORG_PASSPHRASE=${BORG_PASSPHRASE}
+
+  ofelia:
+    image: mcuadros/ofelia:latest
+    container_name: ofelia
+    command: daemon --docker
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      ofelia.job-exec.immich-backup.schedule: "0 0 3 * * *"
+      ofelia.job-exec.immich-backup.container: "borgmatic"
+      ofelia.job-exec.immich-backup.command: "borgmatic-start --stats -v 1"
+
+volumes:
+  borg-config:
+  borg-cache:

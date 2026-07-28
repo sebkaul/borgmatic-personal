@@ -1,0 +1,15 @@
+source_directories:
+  - /mnt/source/immich
+
+repositories:
+  - path: ssh://${BORG_REMOTE_USER}@${BORG_REMOTE_HOST}/${BORG_REPO_PATH}
+    label: immich
+
+keep_daily: ${BORG_KEEP_DAILY}
+keep_weekly: ${BORG_KEEP_WEEKLY}
+keep_monthly: ${BORG_KEEP_MONTHLY}
+
+compression: zstd,10
+
+before_backup:
+  - docker exec immich_postgres pg_dump -U postgres immich | gzip > /mnt/source/immich/backups/pre-backup-dump.sql.gz

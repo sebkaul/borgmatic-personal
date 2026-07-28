@@ -1,0 +1,5 @@
+.env
+config/config.yaml
+ssh/id_ed25519_borg
+ssh/id_ed25519_borg.pub
+ssh/known_hosts
